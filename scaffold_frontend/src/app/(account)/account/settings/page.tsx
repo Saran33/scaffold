@@ -1,5 +1,5 @@
 import { getAuth } from '@/server/auth/session';
-import { accountPageConfig } from '@/config/dashboard';
+import { accountPageConfig } from '@/config/account';
 import { DashboardHeader } from '@/components/layout/header';
 import { DashboardShell } from '@/components/layout/shell';
 import { UserSettings } from '@/components/user-account-settings';

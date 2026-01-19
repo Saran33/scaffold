@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
 
-import { dashboardConfig } from '@/config/dashboard';
+import { dashboardConfig } from '@/config/account';
 import { getCurrentUser } from '@/server/auth/session';
 import { MainNav } from '@/components/layout/main-nav';
 import { SiteFooter } from '@/components/layout/site-footer';

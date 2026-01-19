@@ -15,7 +15,7 @@ export const siteConfig: SiteConfig = {
   owner: 'Your Company Name',
 };
 
-export const HOME_URL = '/';
+export const HOME_URL = '/app';
 export const LOGIN_URL = '/login';
 
 export const supportEmail = `support@${env.NEXT_PUBLIC_APP_URL.replace(/^https?:\/\//, '')}`;

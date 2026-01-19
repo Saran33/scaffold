@@ -2,7 +2,7 @@ import type { DashboardConfig, UserNavItem } from '@/types/config/site';
 import { supportEmailHref } from './site';
 
 export const accountPageConfig = {
-  title: 'Account Settings',
+  title: 'Account',
   description: 'Manage your account and security settings',
   href: '/account/settings',
   icon: 'user',
@@ -14,7 +14,7 @@ export const dashboardConfig: DashboardConfig = {
   mainNav: [
     {
       title: 'Dashboard',
-      href: '/dashboard',
+      href: '/app',
       description: 'Your dashboard',
     },
     {

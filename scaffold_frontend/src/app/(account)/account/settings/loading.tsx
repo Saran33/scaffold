@@ -1,4 +1,4 @@
-import { accountPageConfig } from '@/config/dashboard';
+import { accountPageConfig } from '@/config/account';
 
 import { CardSkeleton } from '@/components/card-skeleton';
 import { DashboardHeader } from '@/components/layout/header';

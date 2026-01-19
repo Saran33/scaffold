@@ -3,7 +3,7 @@
 import { memo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { dashboardConfig } from '@/config/dashboard';
+import { dashboardConfig } from '@/config/account';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { siteConfig } from '@/config/site';
 import equal from 'fast-deep-equal';

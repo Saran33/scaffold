@@ -14,7 +14,7 @@ export const appConfig: DashboardConfig = {
   mainNav: [
     {
       title: 'Dashboard',
-      href: '/dashboard',
+      href: '/app',
       description: 'Your dashboard',
     },
     {
