@@ -1,0 +1,98 @@
+x-common: &common
+  platform: ${PLATFORM:-linux/amd64}
+  restart: unless-stopped
+
+x-api-database: &api-database
+  profiles: ["a", "d"]
+
+x-api-service: &api-service
+  build:
+    context: ./scaffold_api
+    dockerfile: api.dockerfile
+  environment:
+    DOCKER_HOST: ${DOCKER_HOST:-tcp://localhost:2375}
+    APP_ENV: local:docker
+    LOG_LEVEL: ${LOG_LEVEL:-info}
+    API_HOST: scaffold_api
+    PRE_START_PATH: "entry/api/prestart.sh"
+    FIRST_SUPERUSER_PASSWORD: ${FIRST_SUPERUSER_PASSWORD}
+    TEST_USER_PASSWORD: ${TEST_USER_PASSWORD}
+    SMTP_PASSWORD: ${SMTP_PASSWORD:-""}
+
+
+services:
+  # DATABASES
+
+  scaffold_postgres:
+    <<: [*common, *api-database]
+    container_name: scaffold_postgres
+    image: scaffold_postgres:${VERSION:-latest}
+    build:
+      context: ./databases/postgres
+      dockerfile: ./Dockerfile
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin_pass}
+      # Comma-separated list of DB names to create with the same user/password
+      POSTGRES_DATABASES: "scaffold_db,"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -h localhost -d scaffold_db",
+        ]
+      start_period: 30s
+      start_interval: 2s
+      interval: 60s
+
+  scaffold_redis:
+    <<: [*common, *api-database]
+    container_name: scaffold_redis
+    image: scaffold_redis:${VERSION:-latest}
+    build:
+      context: ./databases/redis
+      dockerfile: ./Dockerfile
+    environment:
+      - REDIS_ARGS=--requirepass ${REDIS_PASSWORD:-local_redis_pass}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 10s
+      start_interval: 2s
+      interval: 60s
+
+  # BACKEND
+
+  scaffold_api:
+    <<: [*common, *api-service]
+    container_name: scaffold_api
+    image: scaffold_api:${VERSION:-latest}
+    user: scaffold
+    build:
+      context: ./scaffold_api
+      dockerfile: api.dockerfile
+    healthcheck:
+      test: |
+        python -c '
+        import os, sys, urllib.request;
+        sys.exit(urllib.request.urlopen("http://"+os.environ["API_HOST"]+":8123/api/v1/healthcheck").getcode() != 200)
+        '
+      start_period: 10s
+      start_interval: 2s
+      interval: 60s
+    profiles: ["a", "b"]
+
+
+  # FRONTEND
+
+  scaffold_frontend:
+    <<: *common
+    container_name: ${FRONTEND_APP_NAME:-scaffold_frontend}
+    image: ${FRONTEND_APP_NAME:-scaffold_frontend}:${VERSION:-latest}
+    environment:
+      FRONTEND_HOST: ${FRONTEND_APP_NAME:-scaffold_frontend}
+    healthcheck:
+      test: "wget --spider -q http://$${FRONTEND_HOST}:3000 || exit 1"
+      start_period: 10s
+      start_interval: 2s
+      interval: 60s
+    profiles: ["a", "f"]

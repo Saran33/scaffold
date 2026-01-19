@@ -1,0 +1,57 @@
+{
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}/scaffold_api${pathSeparator}${workspaceFolder}/scaffold_api/tests"
+  },
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/scaffold_api",
+    "APP_ENV": "local:host"
+  },
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.cwd": "${workspaceFolder}/scaffold_api",
+  "python.testing.pytestArgs": ["."],
+  "pytest.command": "${workspaceFolder}/scaffold_api/.venv/bin/pytest",
+  "python.testing.pytestPath": "${workspaceFolder}/scaffold_api/.venv/bin/pytest",
+  "pythonTestExplorer.testFramework": "pytest",
+  "pythonTestExplorer.testplanEnabled": false,
+  "testExplorer.gutterDecoration": true,
+  "testing.gutterEnabled": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/scaffold_api/stubs"
+  ],
+  "notebook.formatOnSave.enabled": true,
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      // "source.organizeImports": "explicit"
+    },
+    "notebook.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      // "notebook.source.organizeImports": "explicit"
+    }
+  },
+  "[helm]": {
+    "editor.formatOnSave": false
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/scaffold_api/.venv/bin/python",
+  "search.useIgnoreFiles": false,
+  "scm.alwaysShowRepositories": false,
+  "scm.alwaysShowActions": false,
+  "scm.autoReveal": true,
+  "git.openRepositoryInParentFolders": "prompt",
+  "gitlens.detectNestedRepositories": false,
+  "mypy-type-checker.args": [
+    "--config-file=${workspaceFolder}/scaffold_api/pyproject.toml"
+  ],
+  "mypy-type-checker.cwd": "${workspaceFolder}/scaffold_api",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.shellcheck": "explicit"
+  },
+  "ruff.nativeServer": "on",
+  "ruff.configuration": "${workspaceFolder}/scaffold_api/pyproject.toml",
+  "ruff.format.preview": true,
+  "python-envs.pythonProjects": [],
+}

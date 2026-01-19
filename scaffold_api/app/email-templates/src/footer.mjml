@@ -1,0 +1,16 @@
+<!-- footer.mjml -->
+<mj-section padding-top="5px">
+  <mj-column>
+    <mj-text align="center" font-size="11px">
+      <a href="{{ site_url }}/privacy" style="text-decoration: underline; color: #000000;">Privacy Policy</a>
+       |
+      <a href="mailto:{{ support_email }}" style="text-decoration: underline; color: #000000;">Contact Support</a>
+    </mj-text>
+    <mj-text align="center" font-size="11px" padding-top="5px">
+      {{ business_address }}
+    </mj-text>
+    <mj-text align="center" font-size="11px" padding-top="5px">
+      © {{ copyright_year }} {{ business_name }}
+    </mj-text>
+  </mj-column>
+</mj-section>

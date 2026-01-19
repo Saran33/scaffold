@@ -1,0 +1,13 @@
+.git*
+.next
+node_modules
+next-env.d.ts
+.contentlayer
+tests
+.env
+playwright.config.ts
+*.nnb
+*.test
+*.txt
+*NOTES.txt
+external

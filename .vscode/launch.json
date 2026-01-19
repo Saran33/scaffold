@@ -1,0 +1,124 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "cwd": "${workspaceFolder}/scaffold_api",
+      "args": [
+        "app.main:app",
+        "--host",
+        "localhost", // "192.168.1.11",
+        "--port",
+        "8123",
+        "--reload",
+        "--log-level",
+        "debug"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "PYDEVD_DISABLE_FILE_VALIDATION": "1",
+        "PYTHONPATH": "${workspaceFolder}/scaffold_api",
+        "LOG_LEVEL": "DEBUG"
+      }
+    },
+    {
+      "name": "FastAPI & Dependencies",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "cwd": "${workspaceFolder}/scaffold_api",
+      "args": [
+        "app.main:app",
+        "--host",
+        "localhost",
+        "--port",
+        "8123",
+        "--reload",
+        "--log-level",
+        "debug"
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "PYDEVD_DISABLE_FILE_VALIDATION": "1",
+        "PYTHONPATH": "${workspaceFolder}/scaffold_api",
+        "LOG_LEVEL": "DEBUG"
+      }
+    },
+    {
+      "name": "FastAPI Test Server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "cwd": "${workspaceFolder}/scaffold_api",
+      "args": [
+        "app.main:app",
+        "--host",
+        "localhost",
+        "--port",
+        "8123",
+        "--reload",
+        "--log-level",
+        "debug"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "IS_TEST": "1",
+        "PYDEVD_DISABLE_FILE_VALIDATION": "1",
+        "PYTHONPATH": "${workspaceFolder}/scaffold_api",
+        "LOG_LEVEL": "DEBUG"
+      }
+    },
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env",
+      "justMyCode": true,
+      "env": {
+        "PYDEVD_DISABLE_FILE_VALIDATION": "1",
+        "PYTHONPATH": " $${workspaceFolder}/scaffold_api",
+        "LOG_LEVEL": "DEBUG"
+      }
+    },
+    {
+      "name": "Python: Debug Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "purpose": ["debug-test"],
+      "presentation": {
+        "hidden": true
+      },
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        // "PYDEVD_DISABLE_FILE_VALIDATION": "1",
+        "PYTEST_ADDOPTS": "--no-cov --timeout=1000000",
+        "LOG_LEVEL": "DEBUG",
+        "APP_ENV": "local:host"
+      },
+      "envFile": "${workspaceFolder}/.env",
+      "args": ["--collect-only", "--random-order"]
+    },
+    {
+      "name": "Python Debugger: Python File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "env": {
+        "PYDEVD_DISABLE_FILE_VALIDATION": "1"
+      }
+    }
+  ]
+}

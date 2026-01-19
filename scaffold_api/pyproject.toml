@@ -1,0 +1,245 @@
+[project]
+name = "scaffold_api"
+version = "0.1.0"
+description = ""
+requires-python = ">=3.13.1,<4.0"
+authors = [{ name = "Tanantor Ltd." }]
+maintainers = [{ name = "Saran Connoly", email = "saran@tanantor.com" }]
+readme = "README.md"
+license = { text = "MIT" }
+
+dependencies = [
+    "aiofiles (>=24.1.0,<25.0.0)",
+    "aiosmtplib (>=3.0.2,<4.0.0)",
+    "alembic (>=1.16.5,<2.0.0)",
+    "asgiref (>=3.6.0,<4.0.0)",
+    "asyncpg (>=0.30.0,<0.31.0)",
+    "bcrypt (>=4.2.1,<5.0.0)",
+    "dill (>=0.3.6,<0.4.0)",
+    "email-validator (>=2.0,<3.0)",
+    "eth-account (>=0.13.7,<0.14.0)",
+    "fastapi (>=0.116.2,<0.117.0)",
+    "fastapi-mail (>=1.4.2,<2.0.0)",
+    "gcloud-aio-auth (>=5.4.2,<6.0.0)",
+    "gcloud-aio-storage>=9.6.0,<10.0.0",
+    "google-cloud-secret-manager (>=2.24.0,<3.0.0)",
+    "google-cloud-storage (>=3.3.1,<4.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "jinja2 (>=3.1.2,<4.0.0)",
+    "orjson (>=3.11.3,<4.0.0)",
+    "pillow (>=11.3.0,<12.0.0)",
+    # In prod: https://www.psycopg.org/psycopg3/docs/basic/install.html#local-installation
+    "psycopg[binary,pool] (==3.2.4)",
+    "pydantic (>=2.11.9,<3.0.0)",
+    "pydantic-settings (>=2.10.1,<3.0.0)",
+    "python-dotenv (>=0.21.0,<0.22.0)",
+    "python-jose[cryptography] (>=3.4.0,<4.0.0)",
+    "python-multipart (>=0.0.20,<0.1.0)",
+    "redis (>=5.2.1,<6.0.0)",
+    "simplejson (>=3.20.1,<4.0.0)",
+    "structlog (>=25.4.0,<26.0.0)",
+    "sqlalchemy[asyncio] (>=2.0.7,<3.0.0)",
+    "sqlalchemy-utils (>=0.41.2,<0.42.0)",
+    "tenacity (>=8.0.1,<9.0.0)",
+    "typer (>=0.15.3,<1.0.0)",
+    "uvicorn[standard] (>=0.35.0,<0.36.0)",
+]
+
+[project.optional-dependencies]
+
+[project.scripts]
+
+[tool.uv]
+environments = [
+    "sys_platform == 'darwin'",
+    "sys_platform == 'linux'",
+]
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    # "sys_platform == 'darwin' and platform_machine == 'aarch64'",
+]
+resolution = "highest"
+
+dev-dependencies = [
+    "aiohttp (>=3.11.16,<4.0.0)",
+    "asgi-lifespan (>=2.1.0,<3.0.0)",
+    "factory-boy (>=3.3.3,<4.0.0)",
+    "gevent (>=25.9.1,<26.0.0)",
+    "google-api-python-client-stubs (>=1.29.0,<2.0.0)",
+    "google-auth-stubs (>=0.3.0,<0.4.0)",
+    "ipykernel (>=6.29.5,<7.0.0)",
+    "mypy (>=1.17.1,<2.0.0)",
+    "pre-commit (==4.1.0)",
+    "pymupdf (>=1.26.5,<2.0.0)",
+    "pytest (>=8.3.4,<9.0.0)",
+    "pytest-asyncio (>=0.25.3,<0.26.0)",
+    "pytest-cov (>=6.0.0,<7.0.0)",
+    "pytest-env (>=1.1.5,<2.0.0)",
+    "pytest-randomly (>=3.16.0,<4.0.0)",
+    "pytest-recording (==0.13.2)",
+    "pytest-timeout (>=2.3.1,<3.0.0)",
+    "pytest-xdist (>=3.6.1,<4.0.0)",
+    "requests (>=2.28.1,<3.0.0)",
+    "ruff (>=0.11.2,<0.12.0)",
+    "types-aiofiles (>=24.1.0.20241221,<25.0.0)",
+    "types-passlib (>=1.7.7.10,<2.0.0)",
+    "types-python-dateutil (>=2.8.19.13,<3.0.0)",
+    "types-python-jose (>=3.3.4.5,<4.0.0)",
+    "types-pyyaml (>=6.0.12.20241230,<7.0.0)",
+    "types-redis (>=4.6.0.20241004,<5.0.0)",
+    "types-requests (>=2.28.11.15,<3.0.0)",
+    "types-simplejson (>=3.20.0.20250218,<4.0.0)",
+    "types-sqlalchemy-utils (>=1.0.1,<2.0.0)",
+    "types-toml (>=0.10.8.5,<0.11.0)",
+    "vcrpy (>=6.0.2,<7.0.0)",
+    "watchfiles (>=1.0.4,<2.0.0)",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Repository = "https://github.com/your-org/scaffold"
+Issues = "https://github.com/your-org/scaffold/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["scaffold_api"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"py.typed" = "py.typed"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.mypy]
+python_version = "3.13"
+mypy_path = "./mypy"
+# strict = true
+# follow_imports = "skip"
+# warn_return_any = true
+# disallow_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true
+strict_equality = true
+extra_checks = true
+check_untyped_defs = true
+plugins = ["sqlalchemy.ext.mypy.plugin", "pydantic.mypy"]
+exclude = "(migrations/target|tests/target)/"
+
+[[tool.mypy.overrides]]
+module = ["emails.*", "factory.*", "dill.*", "google.cloud.*", "pymupdf.*", "web3.*", "eth_account.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["nanoid.*"]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = 'auto'
+addopts = "--cov . --cov-report=term-missing:skip-covered --cov-report=xml --no-cov-on-fail --color=yes" # --replay-record-dir=build/tests/replay"
+timeout = 10
+env = ["IS_TEST=true"]
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+src = ["scaffold_api/*"]
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "stubs",
+]
+target-version = "py313"
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+exclude = [".git", "__pycache__"]
+ignore = [
+    "E501", # conflicts with black line length
+    "E203", # conflicts with black space before :
+    "E402", # allow imports anywhere in file
+    "ERA001", # allow commented out code
+    "RET504", # allow assignment before return statements
+    "C408", # allow dict call instead of dict literal for readability
+]
+extend-select = [
+    "B",      # bugbear
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I001",   # isort
+    "UP",     # pyupgrade
+    "RUF100", # unused-noqa
+    "T2",     # flake8-typing-imports
+    "T201",   # flake8-print
+    "T203",   # flake8-pprint
+    "PIE",    # flake8-pie
+    "ERA",    # flake8-eradicate
+    "SIM",    # flake8-simplify
+    "TID",    # flake8-tidy-imports
+    "RET",    # flake8-return
+    "RSE",    # flake8-raise
+    "ISC",    # flake8-implicit-str-concat
+    "C4",     # flake8-comprehensions
+    "PLE",    # pylint-errors
+    "PLW",    # pylint-warnings
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "lib", "tests"]
+
+# [tool.ruff.lint.flake8.tidy-imports]
+# [tool.ruff.lint.flake8.tidy-imports.banned-api]
+# deprecate a function
+# "some_module.submodule.some_function".msg = "Use some_other_func instead"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    "F401", # intentionally unused imports
+    "F403", # allow wildcard imports
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = [
+    "F401", # intentionally unused imports
+    "F403", # allow wildcard imports
+]
+"*.ipynb" = [
+    "B018", # unused variables
+    "T201", # allow print statements
+    "T203", # allow pprint statements
+    "I001", # allow imports anywhere in file
+]
+"**/app/db/setup/**/*" = [
+    "T201", # allow print statements
+    "T203", # allow pprint statements
+]
+"**/scripts/**/*" = [
+    "T201", # allow print statements
+    "T203", # allow pprint statements
+]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+    "fastapi.Body",
+    "fastapi.Depends",
+    "fastapi.params.Depends",
+    "fastapi.Query",
+    "fastapi.params.Query",
+]
+
+[tool.vulture]
+paths = ["."]
+exclude = ["migrations", "tests"]
+sort_by_size = true
+verbose = true
+# turning on alters output to format for `whitelist.py`
+# so you can extend the ignores for easier running in future
+make_whitelist = true

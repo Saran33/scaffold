@@ -1,0 +1,42 @@
+x-api-service-reload:
+  &api-service-reload
+  volumes:
+    - ./scaffold_api:/home/scaffold_api
+    - scaffold_venv:/opt/.venv
+
+services:
+
+  # BACKEND
+
+  scaffold_api:
+    <<: *api-service-reload
+
+  # FRONTEND
+
+  # scaffold_frontend:
+  #   image: ${PREFIX}${FRONTEND_APP_NAME:-scaffold_frontend_dev}:${VERSION:-latest}
+  #   build:
+  #     context: ${FRONTEND_REPO_PATH:-./scaffold_frontend}
+  #     dockerfile: frontend.dockerfile
+  #     target: dev
+  #     args:
+  #       - DEV_ENV_FILE=.env.dev.docker
+  #   env_file:
+  #     - ../scaffold_frontend/.env
+  #     - ../scaffold_frontend/.env.development
+  #   environment:
+  #     - NODE_ENV=development
+  #   volumes:
+  #     - ./scaffold_frontend/:/app
+  #     - /app/node_modules
+  #     - /app/.next
+  #     - /app/.contentlayer
+  #   command: pnpm dev
+
+volumes:
+  # NOTE: When dependencies change in pyproject.toml/uv.lock, you may need to remove
+  # this volume to avoid using stale cached dependencies: `docker volume rm scaffold_venv`
+  scaffold_venv:
+    name: scaffold_venv
+  scaffold_node:
+    name: scaffold_node

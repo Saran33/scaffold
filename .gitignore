@@ -1,0 +1,63 @@
+*.crt
+*.key
+*.pem
+*.p8
+certificates
+.venv
+.env
+!.env.example
+!.env.*.example
+!.env.e2e
+.env.production
+.env.mobile
+__pycache__
+.cache
+app.egg-info
+.mypy_cache
+.ruff_cache
+.pytest_cache
+.coverage*
+htmlcov
+poetry.lock
+uv.lock
+requirements.txt
+coverage.xml
+gcp_sa*.json
+.bash_history
+.DS_Store
+*.tar
+
+# Character unlock secrets (never commit!)
+**/data/character_unlock_secrets.json
+
+# Smart contract environment and artifacts
+# Ignore all .env.contracts.* files except .example (now in contracts/ directory)
+/contracts/.env.contracts
+/contracts/.env.contracts.*
+!/contracts/.env.contracts.example
+# Ignore localhost deployments (ephemeral), but keep testnet/mainnet
+/contracts/ignition/deployments/chain-31337
+/contracts/node_modules
+/contracts/cache
+/contracts/artifacts
+/contracts/typechain-types
+
+# frontend deps
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+/build
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.contentlayer
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

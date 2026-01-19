@@ -1,0 +1,44 @@
+[default] # APP_ENV='prod'
+
+# Business Details
+BUSINESS_NAME = 'Your Company Name'
+BUSINESS_ADDRESS = 'Your Address'
+
+# Backend
+PROJECT_NAME = 'scaffold'
+API_V1_STR = '/api/v1'
+BACKEND_CORS_ORIGINS = [
+    'http://example.com',
+    'https://example.com',
+]
+SITE_HOST='example.com'
+SERVER_HOST = 'api.example.com'
+HTTPS_SITE = true
+HTTPS_SERVER = true
+JSON_LOGS = false
+USERS_OPEN_REGISTRATION = true
+AUTH_FLOW = 'oauth2'
+AUTH_JWKS_TTL_MINS = 120
+
+# Email
+EMAILS_ENABLED = true
+SMTP_TLS = true
+SMTP_PORT = 587
+SMTP_HOST = "smtp.sendgrid.net"
+SMTP_USER = "apikey"
+# SMTP_PASSWORD= # SendGrid API key, set in secrets manager
+EMAILS_FROM_EMAIL = 'no-reply@example.com'
+SUPPORT_EMAIL = 'support@example.com'
+
+# Postgres
+POSTGRES_DB = 'scaffold_db'
+
+# Redis
+REDIS_DB = 0
+
+[docker] # APP_ENV='prod:docker'
+AUTH_NEXT_DOMAIN = 'https://example.com'
+POSTGRES_HOST = 'postgres.backend.svc.cluster.local'
+POSTGRES_PORT = 7777
+REDIS_HOST = 'redis.backend.svc.cluster.local'
+REDIS_PORT = 6377

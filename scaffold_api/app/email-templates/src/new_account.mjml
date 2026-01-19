@@ -1,0 +1,29 @@
+<mjml>
+  <mj-head>
+    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"/>
+    <mj-attributes>
+      <mj-all font-family="Inter, sans-serif" color="#0f100f" />
+      <mj-text font-size="16px" />
+      <mj-button background-color="#0f100f" color="white" inner-padding="8px 16px" border-radius="4px"/>
+      <mj-divider border-color="#71717a"  />
+    </mj-attributes>
+    <mj-style>
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#fff">
+    <mj-section>
+      <mj-column>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#f8fafc">
+      <mj-column>
+      <mj-text font-size="20px" color="#09090b">Welcome to {{ project_name }}</mj-text>
+      <mj-divider border-width="3px" />
+        <mj-text>Please verify your email address to complete your registration.</mj-text>
+        <mj-button href="{{ link }}">Verify Email</mj-button>
+        <mj-divider border-width="2px" />
+      </mj-column>
+    </mj-section>
+    <mj-include path="footer.mjml" />
+  </mj-body>
+</mjml>

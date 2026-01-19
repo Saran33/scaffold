@@ -1,0 +1,50 @@
+services:
+
+  # DATABASES
+
+  scaffold_postgres:
+    extends:
+      file: docker-compose.base.yaml
+      service: scaffold_postgres
+    ports:
+      - 7777:5432
+    volumes:
+      - ${POSTGRES_VOLUME_NAME:-scaffold_pg_data}:/var/lib/postgresql/data
+
+  scaffold_redis:
+    extends:
+      file: docker-compose.base.yaml
+      service: scaffold_redis
+    ports:
+      - 6377:6379
+    volumes:
+      - ${REDIS_VOLUME_NAME:-scaffold_redis_data}:/data
+
+  # BACKEND
+
+  scaffold_api:
+    extends:
+      file: docker-compose.base.yaml
+      service: scaffold_api
+    ports:
+      - 8123:8123
+    depends_on:
+      scaffold_postgres:
+        condition: service_healthy
+      scaffold_redis:
+        condition: service_healthy
+
+  # FRONTEND
+
+  # scaffold_frontend:
+  #   extends:
+  #     file: docker-compose.base.yaml
+  #     service: scaffold_frontend
+  #   ports:
+  #     - 3000:3000
+
+volumes:
+  scaffold_pg_data:
+    name: ${POSTGRES_VOLUME_NAME:-scaffold_pg_data}
+  scaffold_redis_data:
+    name: ${REDIS_VOLUME_NAME:-scaffold_redis_data}

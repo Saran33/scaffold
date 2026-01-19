@@ -1,0 +1,67 @@
+x-api-test-service: &api-test-service
+  environment:
+    APP_ENV: "local:docker"
+    IS_TEST: "true"
+    IS_E2E:
+    API_HOST: scaffold_test_api
+    POSTGRES_HOST: scaffold_test_postgres
+    REDIS_HOST: scaffold_test_redis
+    FIRST_SUPERUSER_PASSWORD: ${FIRST_SUPERUSER_PASSWORD}
+    TEST_USER_PASSWORD: ${TEST_USER_PASSWORD}
+
+services:
+  # DEPENDENCIES
+
+  scaffold_test_postgres:
+    extends:
+      file: ../../docker-compose.base.yaml
+      service: scaffold_postgres
+    container_name: scaffold_test_postgres
+    ports:
+      - 7776:5432
+
+  scaffold_test_redis:
+    extends:
+      file: ../../docker-compose.base.yaml
+      service: scaffold_redis
+    container_name: scaffold_test_redis
+    ports:
+      - 6376:6379
+
+  # BACKEND
+
+  db_migrate:
+    image: scaffold_api:latest
+    container_name: scaffold_test_db_migrate
+    <<: *api-test-service
+    command: alembic upgrade head
+    depends_on:
+      scaffold_test_postgres:
+        condition: service_healthy
+      scaffold_test_redis:
+        condition: service_healthy
+    profiles: ["a", "b"]
+
+  db_populate:
+    image: scaffold_api:latest
+    container_name: scaffold_test_db_populate
+    <<: *api-test-service
+    command: python app/db/setup/init_db.py
+    depends_on:
+      scaffold_test_api:
+        condition: service_healthy
+    profiles: ["a", "b"]
+
+  scaffold_test_api:
+    extends:
+      file: ../../docker-compose.base.yaml
+      service: scaffold_api
+    <<: *api-test-service
+    container_name: scaffold_test_api
+    ports:
+      - 8123:8123
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db_migrate:
+        condition: service_completed_successfully

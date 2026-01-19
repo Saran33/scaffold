@@ -1,0 +1,1 @@
+FROM redis/redis-stack-server:7.4.0-v3
