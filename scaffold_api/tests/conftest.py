@@ -30,7 +30,7 @@ from app.db.setup.init_db import init_db
 from app.db.utils import get_async_engine
 from app.dependencies.db_deps import get_db_async
 from app.main import app
-from app.tasks import order_tasks, user_tasks
+from app.tasks import user_tasks
 from tests import factories
 from tests.factories.base import set_factories_session
 from tests.utils.db import get_db_name
@@ -44,7 +44,6 @@ from tests.utils.vcr_utils import (
 
 pytest_plugins = [
     "tests.fixtures.user_fixtures",
-    "tests.fixtures.payments_fixtures",
 ]
 
 
@@ -132,7 +131,6 @@ async def patch_async_task_db_session(monkeypatch: MonkeyPatch, db: AsyncSession
     modules_to_patch = [
         session_module,
         user_tasks,
-        order_tasks,
     ]
     for module in modules_to_patch:
         monkeypatch.setattr(

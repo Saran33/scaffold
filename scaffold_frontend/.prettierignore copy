@@ -1,6 +1,0 @@
-package-lock.json
-pnm-lock.yaml
-yarn.lock
-node_modules
-.next
-node_modules
