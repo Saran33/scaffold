@@ -16,7 +16,7 @@ export const authConfig = {
   pages: {
     signIn: `${env.NEXT_PUBLIC_APP_URL}/login`,
   },
-  debug: true,
+  debug: env.ENV !== 'production',
   trustHost: true,
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {

@@ -19,7 +19,6 @@ app.egg-info
 .coverage*
 htmlcov
 poetry.lock
-uv.lock
 requirements.txt
 coverage.xml
 gcp_sa*.json

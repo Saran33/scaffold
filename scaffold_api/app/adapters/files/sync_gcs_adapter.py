@@ -1,3 +1,4 @@
+import asyncio
 from datetime import timedelta
 
 import google.cloud.storage as storage
@@ -7,8 +8,10 @@ from app.adapters.files.file_storage_port import FileStoragePort
 
 class SyncGCSAdapter(FileStoragePort):
     """
-    Synchronous GCS adapter for background workers to avoid event loop issues.
-    Restored from previous working implementation.
+    GCS adapter backed by the synchronous google-cloud-storage client.
+
+    The blocking client calls are offloaded to a worker thread via
+    ``asyncio.to_thread`` so awaiting them never blocks the event loop.
     """
 
     def __init__(
@@ -23,7 +26,8 @@ class SyncGCSAdapter(FileStoragePort):
     ) -> str:
         """Return a short-lived URL (HTTP PUT) for uploading a file."""
         blob = self.bucket.blob(resource_path)
-        return blob.generate_signed_url(
+        return await asyncio.to_thread(
+            blob.generate_signed_url,
             version="v4",
             expiration=timedelta(minutes=expires_in_minutes),
             method="PUT",
@@ -38,12 +42,12 @@ class SyncGCSAdapter(FileStoragePort):
     async def revoke_file(self, resource_path: str) -> None:
         """Physically delete a file from GCS."""
         blob = self.bucket.blob(resource_path)
-        blob.delete()
+        await asyncio.to_thread(blob.delete)
 
     async def get_file_metadata(self, resource_path: str) -> dict:
         """Return basic metadata about a file."""
         blob = self.bucket.blob(resource_path)
-        blob.reload()
+        await asyncio.to_thread(blob.reload)
         return {
             "size": blob.size,
             "content_type": blob.content_type,
@@ -55,4 +59,6 @@ class SyncGCSAdapter(FileStoragePort):
     ) -> None:
         """Upload bytes directly to GCS."""
         blob = self.bucket.blob(resource_path)
-        blob.upload_from_string(data, content_type=content_type)
+        await asyncio.to_thread(
+            blob.upload_from_string, data, content_type=content_type
+        )

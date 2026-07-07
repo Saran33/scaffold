@@ -36,11 +36,14 @@ def create_db(db_uri_sync: URL) -> None:
     return
 
 
-def create_tables(db_uri_sync: URL, sync_engine: Engine) -> None:
+def create_tables(db_uri_sync: URL) -> None:
     logger.info("Creating tables metadata")
     db_engine = create_sync_db_engine(db_uri_sync)
-    with sync_engine.begin():
-        Base.metadata.create_all(db_engine)
+    try:
+        with db_engine.begin():
+            Base.metadata.create_all(db_engine)
+    finally:
+        db_engine.dispose()
     logger.info("Created tables metadata")
     return
 

@@ -17,7 +17,9 @@ async def send_email_verification_email(user_id: int):
         await logger.ainfo("email_sent", email=user.email, id=user.id)
 
 
-async def send_password_reset_email(email: str):
+async def send_password_reset_email(email: str, password_hash: str | None = None):
     await logger.ainfo("password_reset_email_sending", email=email)
-    await send_reset_password_email(email_to=email, username=email)
+    await send_reset_password_email(
+        email_to=email, username=email, password_hash=password_hash
+    )
     await logger.ainfo("password_reset_email_sent", email=email)

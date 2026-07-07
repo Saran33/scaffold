@@ -1,5 +1,5 @@
 import structlog
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -135,6 +135,13 @@ class UserService(AppService):
         user = await cls.get_user_by_email(db, email)
         if not UserCRUD.is_active(user):
             raise HTTPException(status_code=400, detail="Inactive user")
+        # Single-use: the token must still match the account's current password
+        # hash, so a reset link cannot be replayed after it has been used.
+        if not verify_password_reset_token(reset_data.token, user.password_hash):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid or expired token - Please request a new password reset email",
+            )
         password_hash = get_password_hash(reset_data.password.get_secret_value())
         user.password_hash = password_hash
         db.add(user)
@@ -172,27 +179,26 @@ class UserService(AppService):
     async def resend_verification_email(
         cls, db: AsyncSession, email: EmailStr
     ) -> dict[str, str]:
-        user = await cls.get_user_by_email(db, email)
-        if not user:
-            raise HTTPException(
-                status_code=404, detail=f"User with email '{email}' not found"
-            )
-        if user.email_verified:
-            raise HTTPException(
-                status_code=status.HTTP_208_ALREADY_REPORTED,
-                detail="This email is already verified",
-            )
-        await send_email_verification_email(user.id)
-        return {"msg": "Verification email sent - Please check your email inbox"}
+        # Return an identical response whether or not the account exists (and
+        # whether or not it is already verified) to avoid account enumeration.
+        user = await UserCRUD.get_by_email(db, email=email)
+        if user and not user.email_verified:
+            await send_email_verification_email(user.id)
+        return {
+            "msg": "If an account with that email exists and is unverified, "
+            "a verification email has been sent - Please check your inbox"
+        }
 
     @classmethod
     async def send_password_reset_email(
         cls, db: AsyncSession, email: EmailStr
     ) -> dict[str, str]:
-        user = await cls.get_user_by_email(db, email)
-        if not user:
-            raise HTTPException(
-                status_code=404, detail=f"User with email '{email}' not found"
-            )
-        await send_password_reset_email(email)
-        return {"msg": "Password reset email sent - Please check your email inbox"}
+        # Return an identical response whether or not the account exists to
+        # avoid account enumeration.
+        user = await UserCRUD.get_by_email(db, email=email)
+        if user:
+            await send_password_reset_email(email, user.password_hash)
+        return {
+            "msg": "If an account with that email exists, a password reset "
+            "email has been sent - Please check your inbox"
+        }

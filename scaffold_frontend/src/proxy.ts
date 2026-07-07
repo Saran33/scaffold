@@ -4,6 +4,7 @@ import NextAuth from 'next-auth';
 import { authConfig } from '@/auth.config';
 import { HOME_URL } from '@/config/site';
 import { ScopeValidator, redirectWithQuery } from '@/lib/utils/auth/middleware';
+import { signInRedirectSchema } from '@/lib/validations/auth';
 
 const scopeValidator = new ScopeValidator({
   '/app/:path*': ['access'],
@@ -22,9 +23,13 @@ export default auth(async req => {
   // Handle authenticated redirects from auth pages
   if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
     if (authenticated && !isTokenExpired) {
-      // Check for redirect parameter and use it, otherwise default to HOME_URL
+      // Validate the attacker-controllable `from` param the same way the
+      // credentials sign-in action does, to prevent open redirects.
       const from = req.nextUrl.searchParams.get('from');
-      const redirectTo = from || HOME_URL;
+      const parsed = from
+        ? await signInRedirectSchema.safeParseAsync(from)
+        : null;
+      const redirectTo = parsed?.success ? (parsed.data ?? HOME_URL) : HOME_URL;
       return NextResponse.redirect(new URL(redirectTo, req.url));
     }
     return NextResponse.next();

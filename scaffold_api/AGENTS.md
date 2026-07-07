@@ -33,6 +33,8 @@
 - **Run hooks**: `make pre-commit-run`
 
 ## Additional Notes
+- `uv.lock` is committed (it is intentionally not gitignored) so a clean checkout resolves the same dependency set that CI validates. Regenerate it with `uv lock` after changing `pyproject.toml`.
+- `fastapi-mail` is pinned to an exact `==1.4.2`: the `1.5.x` line is a broken upstream release (references `SecretStr` without importing it) that stops the app from booting. Do not loosen this pin without verifying the app imports.
 - Remember, we should NEVER be using the system Python. We are using `uv`. If a command is not in the Makefile, it should be run with `uv run <COMMAND>`.
 - Never make any commits or stage changes. These will be reviewed by the team and we will commit them.
 - We need to strictly adhere to SOLID principles and design patterns. The project makes widespread use of protocols and abstract classes.

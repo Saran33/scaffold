@@ -124,13 +124,20 @@ make prune-images             # Clean up unused images
 
 ## Configuration
 
-### Backend Environment (`scaffold_api/.env`)
+### Backend Configuration (`scaffold_api/configurations/<env>_config.toml`)
 
-Key variables to configure:
+Non-secret settings live in the per-environment TOML files
+(`local_config.toml`, `dev_config.toml`, `prod_config.toml`):
 - `POSTGRES_*` - Database connection
 - `REDIS_*` - Redis connection
-- `SECRET_KEY` - JWT signing key (generate with `openssl rand -hex 32`)
+- `SECRET_KEY` - JWT signing key (generate with `openssl rand -hex 32`).
+  Must be set in `prod`; the app refuses to boot otherwise. Other
+  environments fall back to a generated key.
 - `SMTP_*` - Email configuration (optional)
+
+Secrets and local overrides go in `scaffold_api/.env` (see
+`scaffold_api/.env.example`), e.g. `FIRST_SUPERUSER_PASSWORD`. In deployed
+environments secrets are sourced from Google Secret Manager.
 
 ### Frontend Environment (`scaffold_frontend/.env.local`)
 
