@@ -126,7 +126,12 @@ class FapiAuthProvider(AuthProvider):
     ) -> User:
         user = await UserCRUD.get(db, id=userinfo.id)
         if not user:
-            userinfo_dict = userinfo.model_dump(exclude={"is_superuser"})
+            # Never let the token payload drive privilege state: role/active/
+            # is_superuser are set server-side from schema defaults. email_verified
+            # is preserved so IdP-verified OAuth users are not locked out.
+            userinfo_dict = userinfo.model_dump(
+                exclude={"is_superuser", "role", "active"}
+            )
             user_in = schemas.SuperUserCreate(**userinfo_dict)
             user = await UserCRUD.create(db, obj_in=user_in)
             await db.commit()
@@ -192,7 +197,12 @@ class OAuthProvider(AuthProvider):
     ) -> User:
         user = await UserCRUD.get_by_email(db, email=userinfo.email)
         if not user:
-            userinfo_dict = userinfo.model_dump(exclude={"is_superuser"})
+            # Never let the token payload drive privilege state: role/active/
+            # is_superuser are set server-side from schema defaults. email_verified
+            # is preserved so IdP-verified OAuth users are not locked out.
+            userinfo_dict = userinfo.model_dump(
+                exclude={"is_superuser", "role", "active"}
+            )
             user_in = schemas.SuperUserCreate(**userinfo_dict)
             user = await UserCRUD.create(db, obj_in=user_in)
             await db.commit()
