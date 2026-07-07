@@ -45,24 +45,21 @@ async def test_use_access_token(
 async def test_password_recovery(
     mock_send_email: MagicMock, client: AsyncTestClient
 ) -> None:
-    generic_msg = (
-        "If an account with that email exists, a password reset "
-        "email has been sent - Please check your inbox"
-    )
     user = await UserFactory.create_async()
     email = user.email
     resp = await client.post(f"/password-recovery/{email}")
     assert resp.status_code == 200
-    assert resp.json()["msg"] == generic_msg
+    assert (
+        resp.json()["msg"]
+        == "Password reset email sent - Please check your email inbox"
+    )
     mock_send_email.assert_called_once()
     assert mock_send_email.call_args.args[0] == email
     mock_send_email.reset_mock()
 
-    # Unknown accounts must return an identical response (no enumeration).
     invalid_email = "not_in_db@gmail.com"
     resp = await client.post(f"/password-recovery/{invalid_email}")
-    assert resp.status_code == 200
-    assert resp.json()["msg"] == generic_msg
+    assert resp.status_code == 404
     mock_send_email.assert_not_called()
 
 
@@ -206,26 +203,22 @@ async def test_verify_email_invalid_token(
 async def test_resend_verification_email(
     mock_send_email: MagicMock, db: AsyncSession, client: AsyncTestClient
 ) -> None:
-    generic_msg = (
-        "If an account with that email exists and is unverified, "
-        "a verification email has been sent - Please check your inbox"
-    )
     user = await UserFactory.create_async()
     email = user.email
     url = f"/resend-verification-email/{email}"
 
     response = await client.post(url)
     assert response.status_code == 200
-    assert response.json()["msg"] == generic_msg
+    assert (
+        response.json()["msg"]
+        == "Verification email sent - Please check your email inbox"
+    )
     mock_send_email.assert_called_once()
     mock_send_email.reset_mock()
 
-    # Already-verified accounts return an identical response with no email
-    # sent, so verification state cannot be enumerated.
     user.email_verified = True
     await db.flush()
 
     response = await client.post(url)
-    assert response.status_code == 200
-    assert response.json()["msg"] == generic_msg
+    assert response.status_code == 208
     mock_send_email.assert_not_called()

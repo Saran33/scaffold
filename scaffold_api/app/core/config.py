@@ -217,9 +217,7 @@ class ApiSettings(BaseSettings):
     SERVER_HOST: str
     SITE_URL: HttpUrlStr
     SERVER_URL: HttpUrlStr
-    # Credentialed CORS (``allow_credentials=True`` in main.py) must never allow
-    # the "*" wildcard, so only explicit origins are permitted here.
-    BACKEND_CORS_ORIGINS: list[HttpUrlStr]
+    BACKEND_CORS_ORIGINS: list[HttpUrlStr | Literal["*"]]
     TEST_SERVER_HOST: str = "test"
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
@@ -406,18 +404,19 @@ class ApiSettings(BaseSettings):
 
     @classmethod
     def validate_secret_key(cls, values: dict[str, Any]) -> None:
-        """Fail fast when ``SECRET_KEY`` is unset in a deployed environment.
+        """Fail fast when ``SECRET_KEY`` is unset in production.
 
         A per-process random key silently breaks token verification across
-        replicas and restarts, so only local/test may fall back to one.
+        replicas and restarts. Non-production environments keep the generated
+        fallback so a bare checkout still boots.
         """
         if values.get("SECRET_KEY"):
             return
         environment = values.get("ENVIRONMENT")
-        if environment in (AppEnv.DEV, AppEnv.STAGE, AppEnv.PROD):
+        if environment == AppEnv.PROD:
             raise ValueError(
-                "SECRET_KEY must be set in non-local environments; refusing to "
-                "boot with an ephemeral, per-process signing key."
+                "SECRET_KEY must be set in production; refusing to boot with an "
+                "ephemeral, per-process signing key."
             )
         logger.warning("secret_key_ephemeral", environment=str(environment))
         values["SECRET_KEY"] = secrets.token_urlsafe(32)

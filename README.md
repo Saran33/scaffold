@@ -131,7 +131,8 @@ Non-secret settings live in the per-environment TOML files
 - `POSTGRES_*` - Database connection
 - `REDIS_*` - Redis connection
 - `SECRET_KEY` - JWT signing key (generate with `openssl rand -hex 32`).
-  Must be set in `dev`/`stage`/`prod`; the app refuses to boot otherwise.
+  Must be set in `prod`; the app refuses to boot otherwise. Other
+  environments fall back to a generated key.
 - `SMTP_*` - Email configuration (optional)
 
 Secrets and local overrides go in `scaffold_api/.env` (see

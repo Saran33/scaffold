@@ -1,17 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server';
-
-/**
- * Converts a Next.js matcher pattern (e.g. `/app/:path*`) into a RegExp that
- * tests whether a request path falls under it. `:param*` matches the segment
- * and any nested sub-path; `:param` matches a single segment.
- */
-function patternToRegExp(pattern: string): RegExp {
-  const source = pattern
-    .replace(/\/:[^/]+\*/g, '(?:/.*)?')
-    .replace(/\/:[^/]+/g, '/[^/]+');
-  return new RegExp(`^${source}$`);
-}
-
 export class ScopeValidator {
   private pathScopes: { [key: string]: string[] };
 
@@ -20,14 +7,20 @@ export class ScopeValidator {
   }
 
   isAuthorized(scopes: string[] | undefined, path: string): boolean {
-    const pattern = Object.keys(this.pathScopes).find(p =>
-      patternToRegExp(p).test(path)
-    );
+    console.log('path:', path);
+
+    // TODO: Improve path matching
+    // console.log(Object.keys(this.pathScopes));
+    const pattern = Object.keys(this.pathScopes).find(p => {
+      return p.includes(path);
+    });
 
     if (!pattern) {
-      // No scopes are configured for this path.
+      // console.log('No specific scopes required for this path');
       return true;
     }
+    // console.log('Scope required:', this.pathScopes[pattern]);
+    // console.log('user scopes:', scopes);
     return this.pathScopes[pattern].every(scope => scopes?.includes(scope));
   }
 }

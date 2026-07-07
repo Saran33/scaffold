@@ -12,7 +12,7 @@ from app.db.crud import UserCRUD
 from app.db.models import User
 from app.dependencies.base_deps import AppDeps
 from app.dependencies.db_deps import AsyncSessionMaker
-from app.exceptions import AppExc, AppExceptionCase
+from app.exceptions import AppExc
 
 
 async def _get_current_user(
@@ -76,15 +76,27 @@ class UserDeps(AppDeps):
             current_user = await _get_current_user(session, scopes, token, provider)
             _check_email_verified_and_active(current_user)
             return current_user
-        except (AppExceptionCase, HTTPException):
+        except HTTPException:
             return None
 
 
 CurrentUser = Annotated[User, Depends(UserDeps.get_current_user)]
 CurrentActiveUser = Annotated[User, Depends(UserDeps.get_current_active_user)]
 CurrentActiveSuperuser = Annotated[User, Depends(UserDeps.get_current_active_superuser)]
+UserWithBasicPermission = Annotated[
+    User, Security(UserDeps.get_current_active_user, scopes=["basic"])
+]
+UserWithProPermission = Annotated[
+    User, Security(UserDeps.get_current_active_user, scopes=["pro"])
+]
 UserWithAccessPermission = Annotated[
     User, Security(UserDeps.get_current_active_user, scopes=["access"])
+]
+UserWithPrepayPermission = Annotated[
+    User, Security(UserDeps.get_current_active_user, scopes=["prepay"])
+]
+UserWithShopAdminPermission = Annotated[
+    User, Security(UserDeps.get_current_active_user, scopes=["shop_admin"])
 ]
 OptionalCurrentActiveUser = Annotated[
     User | None, Depends(UserDeps.get_optional_current_active_user)

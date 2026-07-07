@@ -19,7 +19,7 @@ from lib.date_utils import to_iso_with_z_suffix, to_utc
 
 def validate_dt_aware(value: str | datetime | None):
     if isinstance(value, str):
-        # parse an ISO string into an aware datetime
+        # deserialize from string to datetime
         dt = datetime.fromisoformat(value)
         if dt.tzinfo is None:
             raise PydanticCustomError(
@@ -27,12 +27,12 @@ def validate_dt_aware(value: str | datetime | None):
             )
         return to_utc(dt)
     if isinstance(value, datetime):
-        # normalise an already-aware datetime to UTC
+        # serialize from datetime to string
         if value.tzinfo is None:
             raise PydanticCustomError(
                 "DateTimeAware", "Datetime object must be timezone-aware"
             )
-        return to_utc(value)
+        return value
     if value is None:
         return None
     raise PydanticCustomError("DateTimeAware", "Invalid value for datetime")
