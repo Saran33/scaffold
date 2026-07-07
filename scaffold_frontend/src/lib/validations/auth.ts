@@ -87,7 +87,13 @@ export const signInRedirectSchema = z
       try {
         const isRelativePath = !/^(http|https):\/\//i.test(url);
         if (isRelativePath) {
-          return url.startsWith('/') && !url.includes('//');
+          // Reject backslashes too: browsers normalise "\" to "/", so
+          // "/\evil.com" resolves as a protocol-relative off-site redirect.
+          return (
+            url.startsWith('/') &&
+            !url.includes('//') &&
+            !url.includes('\\')
+          );
         }
         const parsedUrl = new URL(url);
         const app_domain = new URL(env.NEXT_PUBLIC_APP_URL).hostname;
