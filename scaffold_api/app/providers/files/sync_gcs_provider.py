@@ -3,12 +3,12 @@ from datetime import timedelta
 
 import google.cloud.storage as storage
 
-from app.adapters.files.file_storage_port import FileStoragePort
+from app.providers.files.file_storage_protocol import FileStorageProtocol
 
 
-class SyncGCSAdapter(FileStoragePort):
+class SyncGCSProvider(FileStorageProtocol):
     """
-    GCS adapter backed by the synchronous google-cloud-storage client.
+    GCS provider backed by the synchronous google-cloud-storage client.
 
     The blocking client calls are offloaded to a worker thread via
     ``asyncio.to_thread`` so awaiting them never blocks the event loop.
@@ -17,7 +17,7 @@ class SyncGCSAdapter(FileStoragePort):
     def __init__(
         self, bucket: storage.Bucket, service_account_email: str | None = None
     ):
-        # Accept bucket instance to align with async adapter pattern
+        # Accept bucket instance to align with async provider pattern
         self.bucket = bucket
         self.service_account_email = service_account_email
 
