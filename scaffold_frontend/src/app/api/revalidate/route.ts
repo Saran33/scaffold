@@ -1,9 +1,17 @@
 import { revalidateTag } from 'next/cache';
 import type { NextRequest } from 'next/server';
+import { getCacheRevalidationToken } from '@/lib/utils/auth/server';
 
 const validTags = [''];
 
 export async function POST(request: NextRequest) {
+  const token = request.headers.get('x-secret-token');
+  const expectedToken = await getCacheRevalidationToken();
+
+  if (!token || token !== expectedToken) {
+    return Response.json({ success: false }, { status: 401 });
+  }
+
   const tag = request.nextUrl.searchParams.get('tag');
 
   if (!tag) {

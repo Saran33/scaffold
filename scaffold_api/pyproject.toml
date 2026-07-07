@@ -19,7 +19,7 @@ dependencies = [
     "email-validator (>=2.0,<3.0)",
     "eth-account (>=0.13.7,<0.14.0)",
     "fastapi (>=0.116.2,<0.117.0)",
-    "fastapi-mail (>=1.4.2,<2.0.0)",
+    "fastapi-mail (==1.4.2)",
     "gcloud-aio-auth (>=5.4.2,<6.0.0)",
     "gcloud-aio-storage>=9.6.0,<10.0.0",
     "google-cloud-secret-manager (>=2.24.0,<3.0.0)",

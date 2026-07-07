@@ -97,9 +97,11 @@ async def send_new_account_email(email_to: str, username: str) -> None:
     await send_email(email_to, subject, "new_account.html", context)
 
 
-async def send_reset_password_email(email_to: str, username: str) -> None:
+async def send_reset_password_email(
+    email_to: str, username: str, password_hash: str | None = None
+) -> None:
     subject = "Reset your password"
-    token = generate_password_reset_token(email=email_to)
+    token = generate_password_reset_token(email=email_to, password_hash=password_hash)
     context = {
         "username": username,
         "email": email_to,

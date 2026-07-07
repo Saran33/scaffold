@@ -3,12 +3,11 @@ import secrets
 import tomllib
 from enum import StrEnum
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 import structlog
 from google.api_core.exceptions import NotFound, PermissionDenied
 from google.auth import default as gc_auth_default
-from google.auth.credentials import Credentials
 from google.cloud.secretmanager import SecretManagerServiceClient
 from pydantic import (
     EmailStr,
@@ -99,9 +98,7 @@ class GoogleSecretManagerSource(PydanticBaseSettingsSource):
         self._secrets_format = self.SecretsFormat(secrets_format)
 
     def _set_client(self) -> tuple[SecretManagerServiceClient, str]:
-        credentials, project_id = cast(
-            tuple[Credentials, str | None], gc_auth_default()
-        )
+        credentials, project_id = gc_auth_default()
         if project_id is None:
             raise ValueError("project_id not found in environment")
         client = SecretManagerServiceClient(credentials=credentials)
@@ -212,8 +209,7 @@ class ApiSettings(BaseSettings):
     APP_ENV: str
     ENVIRONMENT: AppEnv
     DEPLOYMENT: AppDeployment
-    # TODO: Ensure this is fixed across instances in production
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
     HTTPS_SITE: bool
     HTTPS_SERVER: bool
@@ -221,7 +217,9 @@ class ApiSettings(BaseSettings):
     SERVER_HOST: str
     SITE_URL: HttpUrlStr
     SERVER_URL: HttpUrlStr
-    BACKEND_CORS_ORIGINS: list[HttpUrlStr | Literal["*"]]
+    # Credentialed CORS (``allow_credentials=True`` in main.py) must never allow
+    # the "*" wildcard, so only explicit origins are permitted here.
+    BACKEND_CORS_ORIGINS: list[HttpUrlStr]
     TEST_SERVER_HOST: str = "test"
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
@@ -406,6 +404,24 @@ class ApiSettings(BaseSettings):
         if values.get("AUTH_FLOW") in ("oauth2", "oauth2-exch"):
             values["AUTH_FLOW_ALLOWS_CREDENTIALS"] = True
 
+    @classmethod
+    def validate_secret_key(cls, values: dict[str, Any]) -> None:
+        """Fail fast when ``SECRET_KEY`` is unset in a deployed environment.
+
+        A per-process random key silently breaks token verification across
+        replicas and restarts, so only local/test may fall back to one.
+        """
+        if values.get("SECRET_KEY"):
+            return
+        environment = values.get("ENVIRONMENT")
+        if environment in (AppEnv.DEV, AppEnv.STAGE, AppEnv.PROD):
+            raise ValueError(
+                "SECRET_KEY must be set in non-local environments; refusing to "
+                "boot with an ephemeral, per-process signing key."
+            )
+        logger.warning("secret_key_ephemeral", environment=str(environment))
+        values["SECRET_KEY"] = secrets.token_urlsafe(32)
+
     GOOGLE_SERVICE_ACCOUNT: str | None = None
     GCP_SERVICE_ACCOUNT_PATH: str | None = None
 
@@ -421,6 +437,7 @@ class ApiSettings(BaseSettings):
         cls.get_auth_next_configs(values)
         cls.get_default_issuer(values)
         cls.get_is_credentials_auth_allowed(values)
+        cls.validate_secret_key(values)
         return values
 
     def get_db_server_uri(self, sync=False) -> URL:

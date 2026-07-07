@@ -54,7 +54,7 @@ class Base(DeclarativeBase):
 
     type_annotation_map = {
         str28: String(28),
-        str36: String(32),
+        str36: String(36),
         str64: String(64),
         str100: String(100),
         str255: String(255),

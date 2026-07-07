@@ -1,3 +1,4 @@
+import hashlib
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -72,37 +73,70 @@ def get_password_hash(password: str) -> str:
     return hashed_bytes.decode("utf-8")
 
 
-def _generate_temp_token(email: str, exp_hrs: float, scope: str) -> str:
+def _password_reset_fingerprint(password_hash: str | None) -> str:
+    """Short digest that binds a reset token to an account's current password.
+
+    Once the password changes (including after the first successful reset) the
+    fingerprint no longer matches, so a captured token cannot be replayed.
+    """
+    return hashlib.sha256((password_hash or "").encode("utf-8")).hexdigest()[:16]
+
+
+def _generate_temp_token(
+    email: str, exp_hrs: float, scope: str, fingerprint: str | None = None
+) -> str:
     delta = timedelta(hours=exp_hrs)
     now = datetime.now(UTC)
     expires = now + delta
     exp = expires.timestamp()
+    claims: dict[str, Any] = {"exp": exp, "nbf": now, "sub": email, "scope": scope}
+    if fingerprint is not None:
+        claims["fp"] = fingerprint
     encoded_jwt = jwt.encode(
-        {"exp": exp, "nbf": now, "sub": email, "scope": scope},
+        claims,
         settings.SECRET_KEY,
         algorithm="HS256",
     )
     return encoded_jwt
 
 
-def _verify_temp_token(token: str, scope: str) -> str | None:
+def _verify_temp_token(
+    token: str, scope: str, fingerprint: str | None = None
+) -> str | None:
     try:
         decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         if decoded_token["scope"] != scope:
+            return None
+        if fingerprint is not None and decoded_token.get("fp") != fingerprint:
             return None
         return decoded_token["sub"]
     except JWTError:
         return None
 
 
-def generate_password_reset_token(email: str) -> str:
+def generate_password_reset_token(email: str, password_hash: str | None = None) -> str:
     return _generate_temp_token(
-        email, settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS, "password_reset"
+        email,
+        settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
+        "password_reset",
+        fingerprint=_password_reset_fingerprint(password_hash),
     )
 
 
-def verify_password_reset_token(token: str) -> str | None:
-    return _verify_temp_token(token, "password_reset")
+def verify_password_reset_token(
+    token: str, password_hash: str | None = None
+) -> str | None:
+    """Verify a reset token.
+
+    When ``password_hash`` is provided the token is additionally checked
+    against the account's current password fingerprint, enforcing single use.
+    """
+    fingerprint = (
+        _password_reset_fingerprint(password_hash)
+        if password_hash is not None
+        else None
+    )
+    return _verify_temp_token(token, "password_reset", fingerprint=fingerprint)
 
 
 def generate_email_verification_token(email: str) -> str:

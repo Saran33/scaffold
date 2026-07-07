@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import sessionmaker
@@ -7,9 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 from app.db.utils import create_async_db_engine, create_sync_db_engine, get_async_engine
 
-if TYPE_CHECKING:
-    if not settings.DB_URI_SYNC or not settings.DB_URI:
-        raise ValueError("DB_URI_SYNC and DB_URI must be set in the environment")
+if not settings.DB_URI_SYNC or not settings.DB_URI:
+    raise ValueError("DB_URI_SYNC and DB_URI must be set in the environment")
 
 DB_URI_SYNC = settings.DB_URI_SYNC
 DB_URI = settings.DB_URI
