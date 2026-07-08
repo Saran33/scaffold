@@ -1,11 +1,11 @@
 from gcloud.aio.storage import Bucket
 
-from app.adapters.files.file_storage_port import FileStoragePort
+from app.providers.files.file_storage_protocol import FileStorageProtocol
 
 
-class GCSAdapter(FileStoragePort):
+class GCSProvider(FileStorageProtocol):
     """
-    A repository/adapter that encapsulates GCS upload logic
+    A provider that encapsulates GCS upload logic
     using gcloud-aio Bucket async operations.
     """
 

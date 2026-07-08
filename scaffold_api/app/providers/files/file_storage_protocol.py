@@ -1,9 +1,9 @@
 from typing import Protocol
 
 
-class FileStoragePort(Protocol):
+class FileStorageProtocol(Protocol):
     """
-    File storage adapter interface.
+    File storage protocol interface (protocol-backed abstraction, Dependency Inversion).
     """
 
     async def generate_upload_url(
